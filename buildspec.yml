@@ -1,0 +1,20 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - export LC_ALL="en_US.UTF-8"
+      - locale-gen en_US en_US.UTF-8
+      - dpkg-reconfigure locales
+  build:
+    commands:
+      - gradle buildZip
+  post_build:
+    commands:
+      - aws cloudformation package --region eu-west-1 --template-file template.yaml --s3-bucket lambda-jars-eu-west-1 --output-template-file outputTemplate.yaml --s3-prefix sam
+artifacts:
+  type: zip
+  files:
+    - outputTemplate.yaml
+cache:
+  paths:
+    - /root/.m2/**/*
